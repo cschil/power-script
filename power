@@ -1,0 +1,35 @@
+#!/bin/bash
+# wake on lan and shutdown script for remote servers
+# for shutdown publickey ssh has to be set up on remote server
+# Author: C. Schiller schreibcarl@gmail.com
+
+#Path
+_wol="/usr/bin/wakeonlan" #wakeonlan or wol
+_ssh="/usr/bin/ssh" #ssh path
+_shutdown="/usr/sbin/shutdown.sh"
+
+#Time to wait after magic-package
+waittime="60"
+# IP or hostname of remote server
+server="mycloud"
+#mac adress of remote server
+server_mac="00:90:a9:ed:8a:a9"
+
+# parametercheck
+if [ $# -ne 1 ]; then
+    echo "Too much or too few parameters."
+    echo "Use one of: <on | off>"
+    exit 1
+fi
+
+if [ $1 == "on" ]; then
+#wake server
+  $_wol $server_mac &>/dev/null
+  sleep $waittime
+elif [ $1 == "off" ]; then
+#shutdwon server
+  $_ssh root@$server "sync && sync && $_shutdown" &>/dev/null
+else
+    echo "Use one of: <on | off>"
+    exit 1
+fi
